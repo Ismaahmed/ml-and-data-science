@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
 CSV_PATH = './Lifestyle_Sleep_Dataset.csv'
 df = pd.read_csv(CSV_PATH)
 
@@ -27,6 +29,20 @@ df = df.drop_duplicates()
 after = df.shape
 # print("Before:", before, "after: ", after)
 
+
+exercise_per_week = {
+    "0":0,
+    "1-2 days":1.5,
+     "3-4 days":3.5,
+     "5+ days": 5
+
+}
+df["How many days do you exercise per week?"] = df["How many days do you exercise per week?"].map(exercise_per_week)
+# print(df["How many days do you exercise per week?"].value_counts())
+
+
+
+
 def iqr_fun(series, k=1.5):
     q1, q3 = series.quantile([0.25,0.75])
     iqr = q3 - q1 
@@ -54,20 +70,50 @@ df["How many days do you exercise per week?"] = df["How many days do you exercis
 # print("low_sleep:", low_sleep, "high_sleep:", high_sleep)
 
 
-exercise_per_week = {
-    "0":0,
-    "1-2 days":1.5,
-     "3-4 days":3.5,
-     "5+ days": 5
 
-}
-df["How many days do you exercise per week?"] = df["How many days do you exercise per week?"].map(exercise_per_week)
-# print(df["How many days do you exercise per week?"].value_counts())
 
 df = pd.get_dummies(df, columns=["Primary Social Media App"], drop_first=False)
+primary = [c for c in df.columns if c.startswith("Primary Social Media App")]
+df[primary] = df[primary].astype(int)
 print("One hot encoding Primary Social Media App:")
 # print([c for c in df.columns if c.startswith("Primary Social Media App")])
 # print(df.head(10))
+
+print("\nSTEP 9 — Feature Scaling (X only) ")
+
+dont_scale = {"How many hours did you sleep last night?"}
+numeric_col = df.select_dtypes(include=["int64", "float64"]).columns.to_list()
+exclude = [c for c  in df.columns if c.startswith("Primary Social Media App") ]
+new_feature_to_scale = [c for c in numeric_col if c not in dont_scale and c not in exclude]
+scale = StandardScaler()
+df[new_feature_to_scale] =  scale.fit_transform(df[new_feature_to_scale])
+# print(df.info())
+# print(df.isnull().sum())
+# print(df.head(10))
+
+OUT_PATH = "Lifestyle_Sleep_clean.csv"
+df.to_csv(OUT_PATH)
+print("saved out:" , OUT_PATH)
+# print("\nSTEP 9 — Feature Scaling (X only) ")
+# dont_scale = {"Price","LogPrice"}
+# numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.to_list()
+
+# exclude = [c for c in df.columns if c.startswith("Location_")] + ["Is_Rural"]
+# new_fautere_to_scale = [c for c in numeric_cols if c not in  dont_scale and c not in  exclude ]
+# scale = StandardScaler()
+# df[new_fautere_to_scale] = scale.fit_transform(df[new_fautere_to_scale])
+
+# sample_cols = ["Price","LogPrice"] 
+# sample_cols += [c for c in df.columns if c not in sample_cols]
+# print(df[sample_cols].describe())
+# print(df.info())
+# print(df.isnull().sum())
+
+# print("\nSTEP 10 — Final Checks & Save")
+# OUT_PATH = "car_l3_clean_ready.csv"
+# df.to_csv(OUT_PATH)
+# print("Saved to out :", OUT_PATH)
+
 
 
 
