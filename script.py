@@ -1,29 +1,12 @@
-a,b = 15,20
-if a > b :
-    print("a geater then")
-elif a < b :
-    print("a loss then") 
-else : 
-    print("a equal")   
-# print(a >= b)
-# print(a <= b)
+import pandas as pd 
+import numpy as np
+from sklearn.model_selection import train_test_split 
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import  RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+# load data
+CSV_PATH = "Dataset\clean_house_l5_dataset.csv"
+df = pd.read_cvs(CSV_PATH)
 
-age = 17
-
-if age > 13 and age < 19 :
-    print("teenager")
-else:
-    print("t")    
-print(age > 13 and age <= 19)
-
-x = 10
-
-if x < 5 or x > 15 :
-    print("")
-print(x < 5 or x > 15)  
-
-num = 7
-if num % 2 == 0 :
-    print("even")
-else :
-    print("odd")
+x = df.drop(columns=["Price" , "LogPrice"])
+y = df["Price"]
