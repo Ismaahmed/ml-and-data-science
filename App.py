@@ -6,6 +6,7 @@ df = pd.read_csv(CSV_PATH)
 
 df.columns = df.columns.str.strip()
 df = df.drop('Timestamp', axis=1)
+df = df.drop('No', axis=1)
 
 # print(df.head(10))
 # print(df.shape )
